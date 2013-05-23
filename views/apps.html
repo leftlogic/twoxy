@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+  <h1>Your apps.</h1>
+
+  {% for msg in msgs %}
+    <p class="{{ msg.type }}">{{ msg.text }}</p>
+  {% endfor %}
+
+  <p><a href="/apps/new">New app</a></p>
+
+  <ul>
+    {% for app in apps %}
+      <li>
+        <a href="/app/{{ app._id }}">{{ app.name }}</a>
+      </li>
+    {% else %}
+      <li>You have no apps. <a href="/apps/new">Create one.</a></li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

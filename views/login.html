@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  {% for error in errors %}
+    <p class="error">{{ error }}</p>
+  {% endfor %}
+  <p>Login with Twitter</p>
+  <p><a href="/auth/twitter">Yes please.</a></p>
+{% endblock %}

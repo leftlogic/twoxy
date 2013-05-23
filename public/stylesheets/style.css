@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 10%;
+  font: 14px/1.5 "Open Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1.5em;
+}
+
+/* Form */
+
+.field {
+  margin: 0.444em 0;
+}
+.field.separate {
+  margin: 1em 0;
+}
+
+.field label {
+  display: inline-block;
+  width: 15em;
+  text-align: right;
+  padding: 0 0.667em;
+  color: #666;
+}
+
+.field input {
+  width: 15em;
+  font: 14px/1.5 "Open Sans", sans-serif;
+  padding: 0.298em 0.444em;
+}
+
+.error {
+  color: #f44;
+}
+
+.success {
+  color: #4a4;
+}

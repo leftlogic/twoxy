@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+  <h1>New app.</h1>
+
+
+  {{data}}
+  <div class="form">
+    <form action="/apps/new" method="POST">
+      <div class="field">
+        <label for="name">App Name</label><input type="text" name="name" id="name" value="{{ data.name }}">
+      </div>
+      <div class="field">
+        <label for="twitterClientId">Twitter Client ID</label><input type="text" name="twitterClientId" id="twitterClientId" value="{{ data.twitterClientId }}">
+      </div>
+      <div class="field">
+        <label for="twitterClientSecret">Twitter Client Secret</label><input type="text" name="twitterClientSecret" id="twitterClientSecret" value="{{ data.twitterClientSecret }}">
+      </div>
+      <div class="field separate">
+        <label></label>
+        <button type="submit">Save</button> or <a href="/">cancel</a>
+        <p>
+          <label></label>
+          {% for msg in msgs %}
+            <span class="{{ msg.type }}">{{ msg.text }}</span>
+          {% endfor %}
+        </p>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}
