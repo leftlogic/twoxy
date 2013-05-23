@@ -8,7 +8,7 @@
   "dependencies": {
     "express": "3.2.0",
     "jade": "*",
-    "casper": "0.0.7",
+    "casper": "0.0.8",
     "connect-mongo": "~0.3.2",
     "mongoose": "~3.6.11",
     "connect-flash": "~0.1.1",
@@ -17,6 +17,7 @@
     "passport": "~0.1.17",
     "passport-twitter": "~0.1.4",
     "connect-ensure-login": "~0.1.1",
-    "underscore": "~1.4.4"
+    "underscore": "~1.4.4",
+    "oauth": "~0.9.10"
   }
 }

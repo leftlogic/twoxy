@@ -13,6 +13,9 @@ var casper       = require('casper'),
 // Databse dependecies
 var Client   = require('../models').Client;
 
+// OAuth deps
+var oauth = require('oauth');
+
 module.exports = function (app) {
 
 /**
@@ -121,6 +124,61 @@ app.get('/auth/twitter/callback',
   passport.authenticate('twitter', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
+  });
+
+/**
+ * API
+ */
+
+var oauthCache = {};
+
+var constructOa = function (client) {
+  return new oauth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
+    client.twitterClientId,
+    client.twitterClientSecret,
+    '1.0A',
+    null,
+    'HMAC-SHA1'
+  );
+};
+
+var proxyRequest = function (method, data, client, cb) {
+  var oa = oauthCache[data.client_id] || constructOa(client);
+  oauthCache[data.client_id] = oa;
+
+  method = method.toLowerCase();
+  if (!oa[method]) return cb(new Error("Unknown method"));
+
+  return oa[method](
+    data.url,
+    data.token,
+    data.token_secret,
+    cb
+  );
+};
+
+app.all('/twitter',
+  casper.check.query('client_id'),
+  casper.check.query('token'),
+  casper.check.query('token_secret'),
+  casper.check.query('url'),
+  function (req, res, next) {
+    Client
+      .findOne({ clientId: req.query.client_id })
+      .exec(casper.db(req, res, function (err, client) {
+        proxyRequest(req.method, req.query, client, function (oaErr, strData, oaRes) {
+          if (err) return res.jsonp(400, oaErr);
+          var data;
+          try {
+            data = JSON.parse(strData);
+          } catch(e) {
+            return res.jsonp(500, new Error("Malformed response from Twitter."));
+          }
+          res.jsonp(data);
+        });
+      }));
   });
 
 /**
