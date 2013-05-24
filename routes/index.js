@@ -114,6 +114,12 @@ app.post('/login',
     failureFlash: true
   }));
 
+app.get('/logout',
+  function (req, res) {
+    req.session.destroy();
+    res.redirect('/');
+  });
+
 /**
  * Authentication
  */

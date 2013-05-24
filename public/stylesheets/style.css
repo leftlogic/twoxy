@@ -2,12 +2,175 @@
   box-sizing: border-box;
 }
 
+/* Fonts */
+
+@font-face {
+  font-family: 'twoxy';
+  src:url('../fonts/twoxy.eot');
+}
+@font-face {
+  font-family: 'twoxy';
+  src: url(data:application/x-font-woff;charset=utf-8;base64,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) format('woff'),
+     url(data:application/x-font-ttf;charset=utf-8;base64,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) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Use the following CSS code if you want to use data attributes for inserting your icons */
+[data-icon]:before {
+  font-family: 'twoxy';
+  content: attr(data-icon);
+  speak: none;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Use the following CSS code if you want to have a class per icon */
+/*
+Instead of a list of all class selectors,
+you can use the generic selector below, but it's slower:
+[class*="icon-"] {
+*/
+.icon-twitter, .icon-plus, .icon-untitled {
+  font-family: 'twoxy';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  color: rgba(0,0,0,.5);
+}
+.icon-twitter:before {
+  content: "\74";
+}
+.icon-plus:before {
+  content: "\61";
+}
+.icon-untitled:before {
+  content: "\6e";
+}
+
+/* Styles */
+
 body {
   padding: 10%;
   font: 14px/1.5 "Open Sans", sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
+  font-size: 1.5em;
+  margin: 1em 0;
+}
+
+h1.title {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  margin: 0;
+  opacity: 0.4;
+}
+
+a { color: #4183c4; }
+a:hover { color: hsl(210, 53%, 30%); }
+.bare { text-decoration: none; }
+.bare:hover { text-decoration: underline; }
+
+/* General */
+
+p {
+  max-width: 28em;
+}
+
+.app-info {
+  list-style: none;
+  padding: 0;
+}
+
+.app-info strong {
+  display: inline-block;
+  width: 15em;
+}
+
+pre {
+  padding: 1em;
+  background: #efefef;
+  white-space: pre;           /* CSS 2.0 */
+  white-space: pre-wrap;      /* CSS 2.1 */
+  white-space: pre-line;      /* CSS 3.0 */
+  white-space: -pre-wrap;     /* Opera 4-6 */
+  white-space: -o-pre-wrap;   /* Opera 7 */
+  white-space: -moz-pre-wrap; /* Mozilla */
+  white-space: -hp-pre-wrap;  /* HP Printers */
+  word-wrap: break-word;      /* IE 5+ */
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-block;
+  padding: 0.298em 0.667em;
+  margin-top: -0.298em;
+  margin-bottom: 0;
+  font-size: 1em;
+  line-height: 1.5;
+  color: #333333;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+  text-decoration: none;
+  -webkit-border-radius: 0.298em;
+     -moz-border-radius: 0.298em;
+          border-radius: 0.298em;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn.disabled,
+.btn[disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+}
+
+.btn:active,
+.btn.active {
+  background-color: #cccccc \9;
+}
+
+.btn:first-child {
+  *margin-left: 0;
+}
+
+.btn:hover,
+.btn:focus {
+  color: #333333;
+  text-decoration: none;
+}
+
+.btn:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.btn.disabled,
+.btn[disabled] {
+  cursor: default;
+  opacity: 0.65;
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.btn-large {
   font-size: 1.5em;
 }
 
@@ -40,4 +203,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .success {
   color: #4a4;
+}
+
+/* Footer */
+
+footer {
+  font-size: 0.8em;
+  margin: 2.5em 0;
 }

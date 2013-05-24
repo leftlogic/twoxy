@@ -8,7 +8,7 @@
     <p class="{{ msg.type }}">{{ msg.text }}</p>
   {% endfor %}
 
-  <p><a href="/apps/new">New app</a></p>
+  <p><a href="/apps/new" class="btn"><i class="icon-plus"></i> New app</a></p>
 
   <ul>
     {% for app in apps %}
@@ -19,5 +19,9 @@
       <li>You have no apps. <a href="/apps/new">Create one.</a></li>
     {% endfor %}
   </ul>
+
+  <footer>
+    <p><a href="/logout">Logout</a></p>
+  </footer>
 
 {% endblock %}

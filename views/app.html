@@ -2,10 +2,29 @@
 
 {% block content %}
 
-  <h1>{{ app.name }}</h1>
-
-  <p><strong>Client ID</strong>: <code>{{ app.clientId }}</code></p>
+  <h2>{{ app.name }}</h2>
 
   <p><a href="/">&larr; all apps</a>
+
+  <ul class="app-info">
+    <li>
+      <strong>Twitter Consumer ID</strong> <code>{{ app.twitterClientId }}</code>
+    </li>
+    <li>
+      <strong>Twitter Consumer Secret</strong> <code>{{ app.twitterClientSecret }}</code>
+    </li>
+    <li>
+      <strong>Proxy Client ID</strong> <code>{{ app.clientId }}</code>
+    </li>
+  </ul>
+
+  <p>To make requests to Twitter via the proxy, make a request to this domain with a valid Twitter API path, and include your <strong>Proxy Client ID</strong> in the query string, with a user <strong>token</strong> and <strong>token secret</strong>.</p>
+
+  <pre>
+    curl <script>document.write(window.location.origin)</script>/1.1/statuses/mentions_timeline.json?proxy_client_id={{ app.clientId }}&token=YOUR_ACCESS_TOKEN&token_secret=YOUR_ACCESS_TOKEN_SECRET
+  </pre>
+
+  <p>You can get an access token from your <a href="https://dev.twitter.com/apps">Twitter app</a>.</p>
+
 
 {% endblock %}
