@@ -8,7 +8,8 @@ var passport = require('passport'),
 
 // Utils
 var casper       = require('casper'),
-    _            = require('underscore');
+    _            = require('underscore'),
+    url          = require('url');
 
 // Databse dependecies
 var Client   = require('../models').Client;
@@ -132,6 +133,13 @@ app.get('/auth/twitter/callback',
 
 var oauthCache = {};
 
+/**
+ * Constructs an OAuth request object that can then be used with a token and
+ * token secret to proxy request to Twitter.
+ *
+ * Parameters:
+ *   {object} client Contains twitterClientId & twitterClientSecret
+ */
 var constructOa = function (client) {
   return new oauth.OAuth(
     'https://api.twitter.com/oauth/request_token',
@@ -144,40 +152,92 @@ var constructOa = function (client) {
   );
 };
 
-var proxyRequest = function (method, data, client, cb) {
-  var oa = oauthCache[data.client_id] || constructOa(client);
-  oauthCache[data.client_id] = oa;
+/**
+ * Proxy the request to this API over to Twitter, wrapping it all up in a lovely
+ * OAuth1.0A package. The Twitter API credentials are stored in the client
+ * object.
+ *
+ * Parameters:
+ *   {string} method HTTP method, and name of method on the OAuth object
+ *   {string} path Twitter API URL path
+ *   {object} config Keys: proxy_client_id, token and token_secret
+ *   {object} req An express request object
+ *   {object} client A document from the client collection, used to construct an
+ *                   OAuth request object
+ *   {function} cb Callback function for when the request is complete. Takes an
+ *                 error, the response as a string and the full response object.
+ */
+var proxyRequest = function (method, path, config, req, client, cb) {
+  // Pull the oa object from the in-memory cache, or create a new on and cache
+  // the hell out of it.
+  var oa = oauthCache[config.proxy_client_id] || constructOa(client);
+  oauthCache[config.proxy_client_id] = oa;
 
+  // Make sure the the oa object has the requisite method
   method = method.toLowerCase();
   if (!oa[method]) return cb(new Error("Unknown method"));
 
+  var twitterUrl = url.format({
+    protocol: 'https',
+    host: 'api.twitter.com',
+    pathname: path,
+    query: req.query
+  });
+
   return oa[method](
-    data.url,
-    data.token,
-    data.token_secret,
+    twitterUrl,
+    config.token,
+    config.token_secret,
     cb
   );
 };
 
-app.all('/twitter',
-  casper.check.query('client_id'),
+/**
+ * Proxy requests to all other URLs to Twitter, using the same path. It also
+ * passes all query parameters, except those used by the proxy, on to Twitter.
+ *
+ * Requires proxy_client_id, token and token_scret. proxy_client_ids are
+ * created when a app is creating using the admin panel.
+ */
+app.all('/*?',
+  casper.check.query('proxy_client_id'),
   casper.check.query('token'),
   casper.check.query('token_secret'),
-  casper.check.query('url'),
   function (req, res, next) {
+    var config = {
+      proxy_client_id: req.query.proxy_client_id,
+      token: req.query.token,
+      token_secret: req.query.token_secret
+    };
+    delete req.query.proxy_client_id;
+    delete req.query.token;
+    delete req.query.token_secret;
+
+    // Find the client associated with this proxy_client_id
     Client
-      .findOne({ clientId: req.query.client_id })
+      .findOne({ clientId: config.proxy_client_id })
       .exec(casper.db(req, res, function (err, client) {
-        proxyRequest(req.method, req.query, client, function (oaErr, strData, oaRes) {
-          if (err) return res.jsonp(400, oaErr);
-          var data;
-          try {
-            data = JSON.parse(strData);
-          } catch(e) {
-            return res.jsonp(500, new Error("Malformed response from Twitter."));
+        if (err) return res.jsonp(500, { error: "Sorry, something went wrong." });
+        if (!client) return res.jsonp(401, { error: "Could not match proxy_client_id." });
+        // Prozy the request onward to Twitter. The OAuth parcel is created in
+        // proxyRequest, and cached for later.
+        proxyRequest(
+          req.method,
+          req.path,
+          config,
+          req,
+          client,
+          function (oaErr, strData, oaRes) {
+            if (oaErr) return res.jsonp(502, { error: 'OAuth error. ' + oaErr });
+            var data;
+            try {
+              data = JSON.parse(strData);
+            } catch(e) {
+              return res.jsonp(502, { error: "Malformed response from Twitter." });
+            }
+            res.jsonp(oaRes.statusCode, data);
           }
-          res.jsonp(data);
-        });
+        );
       }));
   });
 

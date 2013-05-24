@@ -144,8 +144,8 @@ app.use(passport.session());
 app.use(flash());
 
 // Express routing
-app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(app.router);
 
 // Development-only config
 if ('development' === app.get('env')) {
