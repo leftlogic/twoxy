@@ -234,7 +234,18 @@ app.all('/*?',
           req,
           client,
           function (oaErr, strData, oaRes) {
-            if (oaErr) return res.jsonp(502, { error: 'OAuth error. ' + oaErr });
+            if (oaErr) {
+              // Intercept a Twitter error
+              if (oaErr.statusCode) {
+                var data = { errors: [ { message: 'Unknown error.' } ] };
+                try {
+                  data = JSON.parse(oaErr.data);
+                } catch (e) {}
+                return res.jsonp(oaErr.statusCode, data);
+              }
+              // Some other error occurred
+              return res.jsonp(500, oaErr);
+            }
             var data;
             try {
               data = JSON.parse(strData);
