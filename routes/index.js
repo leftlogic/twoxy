@@ -199,6 +199,19 @@ var proxyRequest = function (method, path, config, req, client, cb) {
 };
 
 /**
+ * Filter out unwanted information from a headers object.
+ */
+var filterHeaders = function (headers) {
+  var reject = ['content-length', 'content-type'];
+  return Object.keys(headers).reduce(function (memo, key){
+    if (!_.contains(reject, key)) {
+      memo[key] = headers[key];
+    }
+    return memo;
+  }, {});
+};
+
+/**
  * Proxy requests to all other URLs to Twitter, using the same path. It also
  * passes all query parameters, except those used by the proxy, on to Twitter.
  *
@@ -234,6 +247,12 @@ app.all('/*?',
           req,
           client,
           function (oaErr, strData, oaRes) {
+            // Merge headers in, but don't overwrite any existing headers
+            if (oaRes.headers) {
+              res.set(_.defaults({}, res._headers, filterHeaders(oaRes.headers)));
+            }
+
+            // Uh oh, errortime.
             if (oaErr) {
               // Intercept a Twitter error
               if (oaErr.statusCode) {
@@ -246,12 +265,13 @@ app.all('/*?',
               // Some other error occurred
               return res.jsonp(500, oaErr);
             }
-            var data;
+
+            // Try to extract JSON data from Twitter
+            var data = strData;
             try {
               data = JSON.parse(strData);
-            } catch(e) {
-              return res.jsonp(502, { error: "Malformed response from Twitter." });
-            }
+            } catch(e) {}
+
             res.jsonp(oaRes.statusCode, data);
           }
         );
