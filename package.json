@@ -20,7 +20,7 @@
     "consolidate": "~0.9.1",
     "swig": "~0.13.5",
     "passport": "~0.1.17",
-    "passport-twitter": "~0.1.4",
+    "passport-twitter": "~0.1.5",
     "connect-ensure-login": "~0.1.1",
     "underscore": "~1.4.4",
     "oauth": "~0.9.10"
