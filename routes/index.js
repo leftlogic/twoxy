@@ -231,11 +231,12 @@ app.all('/*?',
     delete req.query.proxy_client_id;
     delete req.query.token;
     delete req.query.token_secret;
+    delete req.query[''];
 
     // Find the client associated with this proxy_client_id
     Client
       .findOne({ clientId: config.proxy_client_id })
-      .exec(casper.db(req, res, function (err, client) {
+      .exec(casper.respond(req, res, function (err, client) {
         if (err) return res.jsonp(500, { error: "Sorry, something went wrong." });
         if (!client) return res.jsonp(401, { error: "Could not match proxy_client_id." });
         // Prozy the request onward to Twitter. The OAuth parcel is created in
@@ -252,27 +253,24 @@ app.all('/*?',
               res.set(_.defaults({}, res._headers, filterHeaders(oaRes.headers)));
             }
 
+            var data = strData;
+
             // Uh oh, errortime.
             if (oaErr) {
               // Intercept a Twitter error
-              if (oaErr.statusCode) {
-                var data = { errors: [ { message: 'Unknown error.' } ] };
-                try {
-                  data = JSON.parse(oaErr.data);
-                } catch (e) {}
-                return res.jsonp(oaErr.statusCode, data);
-              }
-              // Some other error occurred
-              return res.jsonp(500, oaErr);
+              data = oaErr.data;
+              try {
+                data = JSON.parse(oaErr.data);
+              } catch (e) {}
             }
 
-            // Try to extract JSON data from Twitter
-            var data = strData;
+            // Try to extract JSON data
             try {
               data = JSON.parse(strData);
             } catch(e) {}
 
-            res.jsonp(oaRes.statusCode, data);
+            // Pass on the status code
+            res.send(oaRes.statusCode, data);
           }
         );
       }));
