@@ -139,17 +139,18 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(express.cookieParser(config.cookieSecret));
-app.use(express.session({
-  secret: config.cookieSecret,
-  store: new MongoStore({
-    url: config.db
-  })
-}));
-
-// Setup passport
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
+app.set('session middleware', [
+  express.session({
+    secret: config.cookieSecret,
+    store: new MongoStore({
+      url: config.db
+    })
+  }),
+  // Setup passport
+  passport.initialize(),
+  passport.session(),
+  flash()
+]);
 
 // Express routing
 app.use(express.static(path.join(__dirname, 'public')));

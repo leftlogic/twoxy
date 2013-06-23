@@ -24,6 +24,7 @@ module.exports = function (app) {
  */
 
 app.get('/',
+  app.get('session middleware'),
   login.ensureLoggedIn('/login'),
   function (req, res, next) {
     Client
@@ -41,6 +42,7 @@ app.get('/',
  */
 
 app.get('/apps/new',
+  app.get('session middleware'),
   login.ensureLoggedIn('/login'),
   function (req, res, next) {
     console.log(req.flash('data')[0]);
@@ -51,6 +53,7 @@ app.get('/apps/new',
   });
 
 app.post('/apps/new',
+  app.get('session middleware'),
   login.ensureLoggedIn('/login'),
   casper.allow.body(['name', 'twitterClientId', 'twitterClientSecret']),
   function (req, res, next) {
@@ -82,6 +85,7 @@ app.post('/apps/new',
  */
 
 app.get('/app/:_id',
+  app.get('session middleware'),
   login.ensureLoggedIn('/login'),
   function (req, res, next) {
     Client
@@ -100,6 +104,7 @@ app.get('/app/:_id',
  */
 
 app.get('/login',
+  app.get('session middleware'),
   function (req, res) {
     console.log(req.session);
     res.render('login.html', {
@@ -108,6 +113,7 @@ app.get('/login',
   });
 
 app.post('/login',
+  app.get('session middleware'),
   passport.authenticate('twitter', {
     successReturnToOrRedirect: '/',
     failureRedirect: '/login',
@@ -115,6 +121,7 @@ app.post('/login',
   }));
 
 app.get('/logout',
+  app.get('session middleware'),
   function (req, res) {
     req.session.destroy();
     res.redirect('/');
@@ -125,9 +132,11 @@ app.get('/logout',
  */
 
 app.get('/auth/twitter',
+  app.get('session middleware'),
   passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback',
+  app.get('session middleware'),
   passport.authenticate('twitter', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
