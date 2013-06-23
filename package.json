@@ -23,7 +23,8 @@
     "passport-twitter": "~0.1.5",
     "connect-ensure-login": "~0.1.1",
     "underscore": "~1.4.4",
-    "oauth": "~0.9.10"
+    "oauth": "~0.9.10",
+    "nodetime": "~0.8.13"
   },
   "devDependencies": {
     "tap": "~0.4.3",
