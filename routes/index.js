@@ -199,12 +199,23 @@ var proxyRequest = function (method, path, config, req, client, cb) {
     query: req.query
   });
 
-  return oa[method](
-    twitterUrl,
-    config.token,
-    config.token_secret,
-    cb
-  );
+  if (['post', 'put'].indexOf(method) > -1) {
+    return oa[method](
+      twitterUrl,
+      config.token,
+      config.token_secret,
+      req.body,
+      req.headers['Content-Type'],
+      cb
+    );
+  } else {
+    return oa[method](
+      twitterUrl,
+      config.token,
+      config.token_secret,
+      cb
+    );
+  }
 };
 
 /**
