@@ -289,6 +289,10 @@ app.all('/*?',
               data = JSON.parse(strData);
             } catch(e) {}
 
+            if (req.query.callback) { // expects to be JSONP so...script
+              res.writeHead(200, { 'content-type': 'application/javascript' });
+            }
+
             // Pass on the status code
             res.send(oaRes.statusCode, data);
           }
